@@ -1,0 +1,22 @@
+---
+- name: deploy lamp on centos and ubuntu servers
+  hosts: all
+  vars:
+    remote_dir: /etc/ansible/facts.d/
+    facts_file:
+      - ubuntu: localfacts_centos.fact
+      - centos: localfacts_ubuntu.fact
+  tasks:
+    - name: create localfact dir
+      file:
+        state: directory
+        recurse: yes
+        path: "{{ remote_dir }}"
+    - name: copy localfact file
+      file:
+        scr: {{ item.facts_file }}
+        dest: {{ remote_dir }}
+        when: "item.when"
+        with_items:
+          - { facts_file: ubuntu, when: "{{ ansible_distribution == "CentOS" and ansible_distribution_major_version == "7" }}" }
+          - { facts_file: centos, when: "{{ ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "18" }}" }

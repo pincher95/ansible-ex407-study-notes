@@ -1,0 +1,4 @@
+[localfacts]
+ftp_server = vsftpd
+web_server = httpd
+db_server = mariadb-server

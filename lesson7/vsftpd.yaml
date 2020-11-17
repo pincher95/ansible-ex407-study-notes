@@ -1,0 +1,52 @@
+---
+- name: install and configure vsftpd
+  hosts: all
+  vars:
+    anonymous_enable: yes
+    local_enable: yes
+    write_enable: yes
+    anon_upload_enable: yes
+  tasks:
+    - name: install vsftpd
+      yum:
+        name: vsftpd
+        state: present
+    - name: configure vsftpd
+      template:
+        src: templates/vsftpd.conf.j2
+        dest: /etc/vsftpd/vsftpd.conf
+    - name: create ftp pub drirectory
+      file:
+        path: /var/ftp/pub
+        state: directory
+        mode: '755'
+        recurse: yes
+    - name: enable service
+      service:
+        name: vsftpd
+        enabled: yes
+        state: started
+    - name: firewall setting
+      firewalld:
+        service: ftp
+        permanent: yes
+        immediate: yes
+        state: enabled
+    - name: install policycore utils
+      yum:
+        name: policycoreutils-python
+        state: present
+    - name: set SELinux boolean
+      seboolean:
+        name: ftpd_anon_write
+        state: yes
+        persistent: yes
+    - name: set sefcontext
+      sefcontext:
+        setype: public_content_rw_t
+        target: '/var/ftp/pub(/.*)?'
+        state: present
+      notify: apply sefcontext
+  handlers:
+    - name: apply sefcontext
+      command: restorecon -vR /var/ftp/pub

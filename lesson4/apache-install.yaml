@@ -1,0 +1,34 @@
+---
+- name: Enable Apache web server
+  hosts: ansible1
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: install firewalld and httpd
+      yum:
+        name:
+          - firewalld
+          - httpd
+        state: latest
+    - name: install welcome page
+      copy:
+        content: "Hello ansible"
+        dest: /var/www/html/index.html
+    - name: enable and start httpd
+      service:
+        name: httpd
+        enabled: true
+        state: started
+    - name: enable and start firewalld
+      service:
+        name: firewalld
+        enabled: true
+        state: started
+    - name: allow httpd in firewalld
+      firewalld:
+        service: http
+        permanent: yes
+        immediate: true
+        state: enabled
