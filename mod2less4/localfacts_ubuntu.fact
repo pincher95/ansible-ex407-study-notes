@@ -1,4 +1,0 @@
-[localfacts]
-ftp_server = vsftpd
-web_server = apache2
-db_server = mysql-server
