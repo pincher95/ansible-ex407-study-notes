@@ -1,0 +1,14 @@
+---
+- name: Configure SSH Server
+  hosts: all
+  become: yes
+  tasks:
+    - name: configur sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^(.*){{ item.old }}'
+        line: "{{ item.new }}"
+      loop:
+        - { old: "PrintMotd", new: "PrintMotd yes" }
+        - { old: "X11Forwarding", new: "X11Forwarding no" }
+        - { old: "MaxAuthTries", new: "MaxAuthTries 3" }

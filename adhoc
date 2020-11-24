@@ -1,0 +1,10 @@
+#!/bin/bash
+
+declare -A modules=( ["user"]="name=ansible" \
+		     ["authorized_key"]="user=ansible key='{{ lookup('file', '/home/ansible/.ssh/ansible.pub') }}'" \
+		     ["copy"]="dest=/etc/sudoers.d/ansible content='ansible ALL=(ALL) NOPASSWD: ALL'" )
+
+for module in ${!modules[@]}; do
+	sshpass -p toor ansible all -u root -k -m ${module} -a "${modules[$module]}" -vv
+echo ${modules["${module}"]}
+done
