@@ -1,0 +1,4 @@
+Welcome to this webserver.
+<br>The server is managed by: {{ WEB_ADMIN }}
+<br>The address of the server is: {{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address'] }}
+<br>The server FQDN is: {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }}.

@@ -1,0 +1,6 @@
+---
+- name: Create web server
+  hosts: webservers
+  become: yes
+  roles:
+    - sample-apache

@@ -1,0 +1,10 @@
+---
+# vars file for sample-apache
+packages:
+  - httpd
+  - mod_ssl
+  - php
+WEB_ADMIN: anna
+fw_services:
+  - http
+  - https

@@ -1,0 +1,37 @@
+---
+# tasks file for sample-apache
+- name: Install packages
+  yum:
+    name: "{{ packages }}"
+    state: present
+- name: Enable and start web server
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+- name: Open http/https service in firewall
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  loop: "{{ fw_services }}"
+- name: Create new httpd root directory
+  file:
+    state: directory
+    path: /webcontent
+    setype: httpd_sys_content_t
+- name: Restore context
+  command: restorecon -R /webcontent
+- name: Copy index.html from template
+  template:
+    src: index.html.j2
+    dest: /webcontent/index.html
+  notify: restart httpd
+- name: Create link to new httpd root directory
+  file:
+    src: /webcontent/index.html
+    dest: /var/www/html/index.html
+    state: link
+    setype: httpd_sys_content_t
+

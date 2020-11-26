@@ -1,0 +1,68 @@
+---
+# tasks file for sample-mysql
+- name: Create partition
+  parted:
+    device: /dev/vdb
+    number: 1
+    flags: [ lvm ]
+    state: present
+    part_end: 800MiB
+- name: Create VG
+  lvg:
+    vg: vg_database
+    pvs: /dev/vdb1
+- name: Create LVM
+  lvol:
+    vg: vg_database
+    lv: lv_mysql
+    size: 512m
+- name: Create FS
+  filesystem:
+    fstype: xfs
+    dev: /dev/vg_database/lv_mysql
+- name: Create mount point
+  file:
+    state: directory
+    path: /mnt/mysql_backups
+- name: Mount 
+  mount:
+    path: /mnt/mysql_backups
+    src: /dev/vg_database/lv_mysql
+    fstype: xfs
+    state: mounted
+- name: Install MySQL
+  yum:
+    name:
+      - mysql-community-server
+      - MySQL-python.x86_64
+    state: present
+- name: Enable MySQL service
+  service:
+    name: mysql
+    enabled: yes
+    state: started
+- name: Open sql service in Firewall
+  firewalld:
+    service: mysql
+    state: enabled
+    immediate: yes
+    permanent: yes
+- name: Change root password
+  mysql_user:
+    name: root
+    password: "{{ database_password }}"
+    priv: '*.*:ALL,GRANT'
+    check_implicit_admin: true
+- name: Copy ~/.my.cnf for future access
+  copy:
+    dest: /root/.my.cnf
+    content: |
+             [client]
+             user=root
+             password={{ database_password }}
+    mode: '0600'
+- name: Copy main my.cnf
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+  notify: restart mysql service
