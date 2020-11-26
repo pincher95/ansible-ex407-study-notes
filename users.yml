@@ -1,0 +1,36 @@
+---
+- name: Users and Groups
+  hosts: all
+  become: yes
+  vars_files:
+    - vars/secret.yml
+    - vars/user_list.yml
+  vars:
+    uid_groups:
+      - inv_group: "webservers"
+        uid: "1"
+      - inv_group: "database"
+        uid: "2"
+  tasks:
+    - name: Create users
+      user:
+        name: "{{ item.0.username }}"
+        append: yes
+        group: wheel
+        shell: /bin/bash
+        password: "{{ user_password | password_hash('sha512') }}"
+        uid: "{{ item.0.uid }}"
+      when: inventory_hostname in groups[item.1.inv_group] and item.0.uid | string | first == item.1.uid
+      loop: "{{ users | product(uid_groups) | list }}"
+#      with_nested:
+#        - users
+#        - uid_groups
+    - name: Copy ssh pub key
+      authorized_key:
+        user: "{{ item.0.username }}"
+        key: "{{ lookup('file', '/home/ansible/.ssh/ansible.pub') }}"
+      when: inventory_hostname in groups[item.1.inv_group] and item.0.uid | string | first == item.1.uid
+#      loop: "{{ users | product(uid_groups) | list }}"
+      with_nested:
+        - "{{ users }}"
+        - "{{ uid_groups }}"

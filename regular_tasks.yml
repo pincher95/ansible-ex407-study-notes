@@ -1,0 +1,11 @@
+---
+- name: Scheduled Tasks
+  hosts: proxy
+  become: yes
+  tasks:
+    - name: Create cron job 
+      cron:
+        user: root
+        minute: "0"
+        hour: "*/1"
+        job: "date >> /var/log/time.log"
