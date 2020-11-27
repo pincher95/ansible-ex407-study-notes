@@ -185,7 +185,7 @@ Task 14: Download Roles From Ansible Galaxy and Use Them
     - name: haproxy
 - Create a playbook /home/ansible/plays/haproxy.yml that runs on servers in the proxy host group and does the
   following:
-    - Use geerlingguy.haproxy role to load balance request between hosts in the webservers host group.
+    - Use haproxy role to load balance request between hosts in the webservers host group.
     - Use roundrobin load balancing method.
     - HAProxy backend servers should be configured for HTTP only (port 80).
     - Firewall is configured to allow all incoming traffic on port TCP 80.
@@ -213,7 +213,7 @@ Task 17: Use Conditionals to Control Play Execution
 - Create a playbook /home/ansible/plays/sysctl.yml that runs on all inventory hosts and does the following:
     - If a server has more than 2048MB of RAM, then parameter vm.swappiness is set to 10.
     - If a server has less than 2048MB of RAM, then the following error message is displayed:
-        Server memory less than 2048MB
+        "Server memory less than 2048MB"
 
 Task 18: Use Archiving
 - Create a playbook /home/ansible/plays/archive.yml that runs on hosts in the database host group and does the
