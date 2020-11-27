@@ -1,9 +1,0 @@
-[proxy]
-node1.sector1.example.com
-
-[webservers]
-node2.sector1.example.com
-node3.sector1.example.com
-
-[database]
-node4.sector1.example.com
