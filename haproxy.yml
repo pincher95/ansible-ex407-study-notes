@@ -1,0 +1,31 @@
+---
+- name: ownload Roles From Ansible Galaxy and Use Them
+  hosts: proxy
+  become: yes
+
+  vars:
+    haproxy_socket: ''
+    haproxy_chroot: ''
+    haproxy_user: root
+    haproxy_group: root
+    fw_service:
+      - http
+      - https
+
+    haproxy_backend_servers:
+      - name: hode2.sector1.example.com
+        address: 10.0.0.22:80
+      - name: hode3.sector1.example.com
+        address: 10.0.0.23:80
+
+  pre_tasks:
+    - name: Open http/https service in FW.
+      firewalld:
+        service: "{{ item }}"
+        state: enabled
+        immediate: yes
+        permanent: yes
+      loop: "{{ fw_service }}"
+
+  roles:
+    - role: haproxy

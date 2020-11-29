@@ -1,0 +1,21 @@
+---
+- name: Software Packages
+  hosts: all
+  become: yes
+  vars:
+    pkg_groups:
+      - inv_group: proxy
+        pkg:
+          - tcpdump
+          - mailx
+      - inv_group: database
+        pkg:
+          - lsof
+          - mailx
+  tasks:
+    - name: Install package
+      yum:
+        name: "{{ item.pkg }}"
+        state: present
+      when: inventory_hostname in groups[item.inv_group]
+      loop: "{{ pkg_groups }}"

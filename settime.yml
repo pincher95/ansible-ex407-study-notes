@@ -1,0 +1,23 @@
+---
+- name: NTP
+  hosts: all
+  become: yes
+  vars:
+    timesync_ntp_servers:
+      - hostname: control.sector1.example.com
+        iburst: yes
+    minpoll: 4
+    maxpoll: 8
+  roles:
+    - rhel-system-roles.timesync
+  post_tasks:
+    - name: Register chrony activity
+      command:
+        cmd: "chronyc activity"
+      register: chrony_act
+    - name: Check chrony status
+      debug:
+        msg: "Unfortunately time could not be synchronized"
+      retries: 3
+      delay: 3
+      when: chrony_act.stdout_lines[0] != "200 OK" or chrony_act.stdout_lines[1] | first == "0"

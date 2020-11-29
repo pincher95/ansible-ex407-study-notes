@@ -1,0 +1,43 @@
+---
+- name: NTP server
+  hosts: localhost
+  become: yes
+  become_method: su
+  tasks:
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+    - name: Remove NTP server if installed
+      yum:
+        name: ntp
+        state: absent
+      when: "'ntp' in ansible_facts.packages"
+    - name: Installed Chrony server
+      yum:
+        name: chrony
+        state: present
+      when: "'chrony' not in ansible_facts.packages"
+    - name: Start and enable chrony
+      service:
+        name: chronyd
+        state: started
+        enabled: yes
+    - name: Open NTP service in firewall
+      firewalld:
+        service: ntp
+        state: enabled
+        immediate: yes
+        permanent: yes
+    - name: Configure Chrony server
+      lineinfile:
+        path: /etc/chrony.conf
+        regexp: '^(.*)allow'
+        line: 'allow 10.0.0.0/24'
+        backup: yes
+      notify: restart ntp
+  handlers:
+    - name: restart ntp
+      service:
+        name: chronyd
+        state: restarted
+

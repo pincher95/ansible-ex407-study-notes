@@ -1,0 +1,13 @@
+---
+- name: Services
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: set new target
+      command:
+        cmd: systemctl set-default multi-user.target
+      register: target_changed
+    - name: debug
+      debug:
+        var: target_changed
+
