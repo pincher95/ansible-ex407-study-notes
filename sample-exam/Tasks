@@ -240,18 +240,18 @@ Task 21: Services
 
 Task 22. Create and Use Templates to Create Customised Configuration Files
 - Create a playbook /home/ansible/plays/server_list.yml that does the following:
-    - Playbook uses a Jinja2 template server_list.j2 to create a file /etc/server_list.txt on hosts in the database
+    - Playbook uses a Jinja2 template /home/ansible/template/server_list.j2 to create a file /etc/server_list.txt on hosts in the database
       host group.
     - The file /etc/server_list.txt is owned by the ansible user.
     - File permissions are set to 0600.
     - SELinux file label should be set to net_conf_t.
-    - The content of the file is a list of FQDNs of all inventory hosts.
+    - The content of the file is a list of FQDNs and IP address of all inventory hosts.
 
-After running the playbook, the content of the file /etc/server_list.txt should be the following:
-    ansible0.example.com
-    ansible1.example.com
-    ansible2.example.com
-    ansible3.example.com
+After running the playbook, the content of the file /etc/server_list.txt should be the following, mind the list order:
+    HOST1_FQDN: HOST1_IP
+    HOST2_FQDN: HOST2_IP
+    HOST3_FQDN: HOST3_IP
+    HOST4_FQDN: HOST4_IP
 
 Note: if the FQDN of any inventory host changes, re-running the playbook should update the file with the new values.
 
