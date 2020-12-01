@@ -255,8 +255,8 @@ After running the playbook, the content of the file /etc/server_list.txt should 
 
 Note: if the FQDN of any inventory host changes, re-running the playbook should update the file with the new values.
 
-Task 23. Storage
-- Create a playbook /home/ansible/plays/storage.yml that does the following:
+Task 23. Error Handaling
+- Create a playbook /home/ansible/plays/storage.yml that runs on all hosts and does the following:
     - A primary partition number 1 on device /dev/sdb is created.
     - An LVM volume group called vg_data is created that uses the primary partition created above.
     - An LVM logical volume called lv_data is created of size 800MB in the volume group vg_data.
@@ -265,5 +265,7 @@ Task 23. Storage
     - If device does not exists playbook should issue message:
       "Device /dev/sdb on HOST_FQDN does not exists."
       where HOST_FQDN is host's FQDN.
+    - If partition already exist playbook should issue message:
+      "Primary partition number 1 HOST_FQDN already exist."
     - If there is not enough storage on volume group vg_data playbook should issue message:
-      "VG group vg_data doesn't have enough storage".
+      "VG group vg_data doesn't have enough storage on HOST_FQDN".
