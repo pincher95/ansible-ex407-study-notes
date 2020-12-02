@@ -2,7 +2,7 @@ Task 1: Ansible Installation and Configuration
 - Install ansible package on the control node (including any dependencies) and configure the following:
     - Create a regular user ansible with the password of devops. Use this user for all sample exam
       tasks and playbooks, unless you are working on the task #2 that requires creating the ansible
-      user on inventory hosts. You have root access to all five servers.
+      user on inventory hosts. You have root access to all managed hosts.
     - All playbooks and other Ansible configuration that you create for this sample exam should be stored in
       /home/ansible/plays.
 - Create a configuration file /home/ansible/plays/ansible.cfg to meet the following requirements:
@@ -34,6 +34,7 @@ Task 3: Configure managed hosts
   This playbook must perform the following tasks:
   - Disable any currently existing repository.
   - Enable access to the repository on ansible-control.example.com.
+    - name: local_repo
 
 Task 4 : Ad-Hoc Commands
 - Generate an SSH keypair on the control node. You can perform this step manually.
@@ -52,10 +53,10 @@ Task 5: File Content
     - On hosts in the proxy host group the line should be “Welcome to HAProxy server”.
     - On hosts in the webservers host group the line should be “Welcome to Apache server”.
     - On hosts in the database host group the line should be “Welcome to MySQL server”.
-#TODO check the play book
+
 Task 6: File Content - continue
 - Create a playbook with the name /home/ansible/plays/sysreport.yml that generates a file on the managed server.
-  The file should have the name hwtemplate.txt and the following contents:
+  The file should have the name /home/ansible/plays/files/hwtemplate.txt and the following contents:
     NAME=
     IPADDRESS=
     TOTAL_MEMORY=
