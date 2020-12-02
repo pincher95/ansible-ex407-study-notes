@@ -1,0 +1,24 @@
+---
+- name: File Content
+  hosts: all
+  become: yes
+  tasks:
+    - name: Copy file to managed host
+      copy:
+        src: hwtemplate.txt
+        dest: /root/report.txt
+        force: no
+    - name: Modify the file
+      vars:
+        first_nic: "{{ hostvars[inventory_hostname]['ansible_facts']['interfaces'] | difference(['lo']) | sort | first }}"
+        second_nic: "{{ 'NONE' if hostvars[inventory_hostname]['ansible_facts']['interfaces'] | length < 3 else hostvars[inventory_hostname]['ansible_facts']['interfaces'] | difference(['lo']) | sort | last }}"
+      lineinfile:
+        path: /root/report.txt
+        regexp: '^{{ item.old_line }}'
+        line: "{{ item.old_line }}={{ item.new_line }}"
+      loop:
+        - { old_line: "NAME", new_line: "{{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }}" }
+        - { old_line: "IPADDRESS", new_line: "{{ hostvars[inventory_hostname]['ansible_facts']['default_ipv4']['address']}}" }
+        - { old_line: "TOTAL_MEMORY", new_line: "{{ hostvars[inventory_hostname]['ansible_facts']['memtotal_mb'] }}" }
+        - { old_line: "NIC_NAME", new_line: "{{ first_nic }}" }
+        - { old_line: "SECOND_NIC_NAME", new_line: "{{ second_nic }}" }

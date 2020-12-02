@@ -1,0 +1,62 @@
+---
+- name: Error handaling
+  hosts: all
+  become: yes
+  # Init register other wise in consequensce failed tasks the regested will be empty and rescure will fail.
+  vars:
+    partition_created:
+      failed: false
+    vg_created:
+      failed: false
+    lv_created:
+      failed: false
+  tasks:
+    - name: Create LVM and mount it
+      block:
+        - name: Create partition
+          parted:
+            device: /dev/vdb
+            number: 1
+            flags: [ lvm ]
+            state: present
+          register: partition_created
+        - name: Create VG
+          lvg:
+            vg: vg_data
+            pvs: /dev/vdb1
+          when: partition_created is succeeded
+          register: vg_created
+        - name: Create LVM
+          lvol:
+            vg: vg_data
+            lv: lv_data
+            size: 800m
+          when: vg_created is succeeded
+          register: lv_created
+        - name: Create mount point
+          file:
+            state: directory
+            path: /data
+        - name: Create filesystem
+          filesystem:
+            dev: /dev/vg_data/lv_data
+            fstype: ext4
+        - name: Mount filesystem to mount point
+          mount:
+            path: /data
+            src: /dev/vg_data/lv_data
+            fstype: ext4
+            state: mounted
+      rescue:
+        - name: Error device don't exist
+          debug:
+            msg: "Device /dev/vdb on {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }} does not exists."
+          when: partition_created is failed
+        - name: Error primary partition number 1 already exist
+          debug:
+            msg: "Primary partition number 1 on {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }} already exists."
+          when: vg_created is failed
+        - name: Error not enough storage in vg_data
+          debug:
+            msg: "Not enough storage in vg_data on {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }}."
+          when: lv_created is failed

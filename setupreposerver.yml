@@ -1,0 +1,43 @@
+---
+- name: Configure Localhost services
+  hosts: localhost
+  become: yes
+  become_method: su
+  tasks:
+    - name: Install FTP server
+      yum:
+        name: vsftpd
+        state: present
+    - name: Enable and start ftp server
+      systemd:
+        name: vsftpd
+        state: started
+        enabled: yes
+    - name: Open ftp service in FW
+      firewalld:
+        service: ftp
+        state: enabled
+        immediate: yes
+        permanent: yes
+    - name: Enable annonymous user access
+      lineinfile:
+        path: /etc/vsftpd/vsftpd.conf
+        regexp: '^(.*)annonymous'
+        line: 'anonymous_enable=YES'
+      notify: restart vsftpd
+    - name: Create ftp mount point
+      file:
+        state: directory
+        path: /var/ftp/repo
+    - name: mount ISO to mount point
+      mount:
+        path: /var/ftp/repo
+        src: /dev/sr0
+        fstype: iso9660
+        opts: 'ro,noauto,context=unconfined_u:object_r:public_content_t:s0'
+        state: mounted
+  handlers:
+    - name: restart vsftpd
+      systemd:
+        name: vsftpd
+        state: restarted
