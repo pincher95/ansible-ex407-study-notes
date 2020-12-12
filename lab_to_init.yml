@@ -1,0 +1,15 @@
+---
+- name: Restore lab to initial condition
+  hosts: all
+  become: yes
+  vars:
+  vars_files:
+  roles:
+  tasks:
+    - name: Enable default repositories
+      rhsm_repository:
+        name: "{{ item }}"
+        state: enabled
+      loop:
+        - rhel-7-server-extras-rpms
+        - rhel-7-server-rpms
