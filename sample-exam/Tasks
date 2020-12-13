@@ -241,7 +241,7 @@ Task 21: Services
 
 Task 22. Create and Use Templates to Create Customised Configuration Files
 - Create a playbook /home/ansible/plays/server_list.yml that does the following:
-    - Playbook uses a Jinja2 template /home/ansible/template/server_list.j2 to create a file /etc/server_list.txt on hosts in the database
+    - Playbook uses a Jinja2 template /home/ansible/templates/server_list.j2 to create a file /etc/server_list.txt on hosts in the database
       host group.
     - The file /etc/server_list.txt is owned by the ansible user.
     - File permissions are set to 0600.
@@ -269,4 +269,4 @@ Task 23. Error Handaling
     - If partition already exist playbook should issue message:
       "Primary partition number 1 HOST_FQDN already exist."
     - If there is not enough storage on volume group vg_data playbook should issue message:
-      "VG group vg_data doesn't have enough storage on HOST_FQDN".
+      "VG group vg_data doesn't have enough storage on HOST_FQDN."
