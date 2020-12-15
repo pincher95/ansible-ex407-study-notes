@@ -115,7 +115,7 @@ users:
 After running the playbook, users should be able to SSH into their respective servers without passwords.
 
 Task 10: Scheduled Tasks
-- Create a playbook /home/ansible/plays/regular_tasks.yml that runs on servers in the proxy host group and does the
+- Create a playbook /home/ansible/plays/regular_tasks.yml that runs on servers in the frontend host group and does the
   following:
     - A root crontab record is created that runs every hour.
     - The cron job appends the file /var/log/time.log with the output from the date command.
