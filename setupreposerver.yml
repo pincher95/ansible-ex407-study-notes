@@ -22,7 +22,7 @@
     - name: Enable annonymous user access
       lineinfile:
         path: /etc/vsftpd/vsftpd.conf
-        regexp: '^(.*)annonymous'
+        regexp: '^(.*)anonymous'
         line: 'anonymous_enable=YES'
       notify: restart vsftpd
     - name: Create ftp mount point
@@ -34,7 +34,7 @@
         path: /var/ftp/repo
         src: /dev/sr0
         fstype: iso9660
-        opts: 'ro,noauto,context=unconfined_u:object_r:public_content_t:s0'
+        opts: 'ro,auto,context=unconfined_u:object_r:public_content_t:s0'
         state: mounted
   handlers:
     - name: restart vsftpd

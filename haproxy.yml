@@ -13,9 +13,9 @@
       - https
 
     haproxy_backend_servers:
-      - name: hode2.sector1.example.com
+      - name: node2.sector1.example.com
         address: 10.0.0.22:80
-      - name: hode3.sector1.example.com
+      - name: node3.sector1.example.com
         address: 10.0.0.23:80
 
   pre_tasks:

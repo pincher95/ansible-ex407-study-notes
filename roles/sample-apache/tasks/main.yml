@@ -20,9 +20,13 @@
   file:
     state: directory
     path: /webcontent
+- name: Set fcontext on httpd root directory
+  sefcontext:
+    target: '/webcontent(/.*)?'
     setype: httpd_sys_content_t
+    state: present
 - name: Restore context
-  command: restorecon -R /webcontent
+  command: restorecon -irv /webcontent
 - name: Copy index.html from template
   template:
     src: index.html.j2
@@ -33,5 +37,3 @@
     src: /webcontent/index.html
     dest: /var/www/html/index.html
     state: link
-    setype: httpd_sys_content_t
-

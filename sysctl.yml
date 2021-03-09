@@ -13,4 +13,3 @@
       debug:
         msg: "Server memory less than 2048MB"
       when: ansible_facts['memtotal_mb'] < 2048
-

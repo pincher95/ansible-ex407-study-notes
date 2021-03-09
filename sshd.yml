@@ -6,7 +6,7 @@
     - name: configur sshd_config
       lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: '^(.*){{ item.old }}'
+        regexp: '^(#?){{ item.old }}'
         line: "{{ item.new }}"
       loop:
         - { old: "PrintMotd", new: "PrintMotd yes" }

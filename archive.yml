@@ -17,4 +17,3 @@
         path: /mnt/mysql_backups/database_list.txt
         dest: /mnt/mysql_backups/archive.gz
         format: gz
-
