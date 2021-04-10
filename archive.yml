@@ -7,13 +7,16 @@
       file:
         state: directory
         path: /mnt/mysql_backups
+        mode: '0644'
     - name: Create database list
       copy:
         dest: /mnt/mysql_backups/database_list.txt
         content: |
                  dev,test,qa,prod
+        mode: '0644'
     - name: Create archive
       archive:
         path: /mnt/mysql_backups/database_list.txt
         dest: /mnt/mysql_backups/archive.gz
         format: gz
+        mode: '0644'

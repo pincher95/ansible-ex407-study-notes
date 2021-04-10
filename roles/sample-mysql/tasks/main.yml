@@ -24,6 +24,7 @@
   file:
     state: directory
     path: /mnt/mysql_backups
+    mode: '0644'
 - name: Mount 
   mount:
     path: /mnt/mysql_backups
@@ -65,4 +66,5 @@
   template:
     src: my.cnf.j2
     dest: /etc/my.cnf
+    mode: '0644'
   notify: restart mysql service

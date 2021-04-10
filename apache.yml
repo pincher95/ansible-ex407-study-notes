@@ -3,4 +3,4 @@
   hosts: webservers
   become: yes
   roles:
-    - sample-apache
+    - {role: sample-apache}

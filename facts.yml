@@ -7,9 +7,11 @@
       file:
         state: directory
         path: /etc/ansible/facts.d
+        mode: '0644'
     - name: Create local facts
       copy:
         dest: /etc/ansible/facts.d/custom.fact
         content: |
                  [sample_exam]
                  server_role=mysql
+        mode: '0644'

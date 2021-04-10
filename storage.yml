@@ -1,62 +1,61 @@
 ---
-- name: Error handaling
-  hosts: all
+- hosts: all
   become: yes
-  # Init register other wise in consequensce failed tasks the regested will be empty and rescure will fail.
   vars:
-    partition_created:
-      failed: false
-    vg_created:
-      failed: false
-    lv_created:
-      failed: false
+  vars_files:
+  roles:
   tasks:
-    - name: Create LVM and mount it
+    - name: Create LVM device
       block:
-        - name: Create partition
+        - name: Create LVM on /dev/vdb
           parted:
             device: /dev/vdb
-            number: 1
             flags: [ lvm ]
             state: present
-          register: partition_created
-        - name: Create VG
+            number: 1
+          register: _dev_stat
+      rescue:
+        - name: Debug
+          debug:
+            msg: "Device /dev/vdb on {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }} does not exists."
+    - name: Create VG group
+      block:
+        - name: Create VG on /dev/vdb1
           lvg:
-            vg: vg_data
             pvs: /dev/vdb1
-          when: partition_created is succeeded
-          register: vg_created
+            vg: vg_data
+          register: _vg_stat
+      rescue:
+        - name: Debug
+          debug:
+            msg: "Primary partition number 1 {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }} already exist."
+      when: _dev_stat is succeeded
+    - block:
         - name: Create LVM
           lvol:
             vg: vg_data
             lv: lv_data
             size: 800m
-          when: vg_created is succeeded
-          register: lv_created
-        - name: Create mount point
+          register: _lv_stat
+      rescue:
+        - name: Debug
+          debug:
+            msg: "VG group vg_data doesn't have enough storage on {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }}."
+      when: _dev_stat is succeeded and _vg_stat is succeeded
+    - block:
+        - name: Format filesystem
+          filesystem:
+            device: /dev/vg_data/lv_data
+            fstype: ext4
+        - name: Create /data dir
           file:
             state: directory
             path: /data
-        - name: Create filesystem
-          filesystem:
-            dev: /dev/vg_data/lv_data
-            fstype: ext4
-        - name: Mount filesystem to mount point
+            mode: '0755'
+        - name: Mount lvm to /data
           mount:
-            path: /data
             src: /dev/vg_data/lv_data
+            path: /data
             fstype: ext4
             state: mounted
-      rescue:
-        - name: Error device don't exist
-          debug:
-            msg: "Device /dev/vdb on {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }} does not exists."
-          when: partition_created is failed
-        - name: Error primary partition number 1 already exist
-          debug:
-            msg: "Primary partition number 1 on {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }} already exists."
-          when: vg_created is failed
-        - name: Error not enough storage in vg_data
-          debug:
-            msg: "Not enough storage in vg_data on {{ hostvars[inventory_hostname]['ansible_facts']['fqdn'] }}."
-          when: lv_created is failed
+      when: _dev_stat is succeeded and _vg_stat is succeeded and _lv_stat is succeeded

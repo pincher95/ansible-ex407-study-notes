@@ -20,6 +20,7 @@
   file:
     state: directory
     path: /webcontent
+    mode: '0644'
 - name: Set fcontext on httpd root directory
   sefcontext:
     target: '/webcontent(/.*)?'
@@ -27,10 +28,12 @@
     state: present
 - name: Restore context
   command: restorecon -irv /webcontent
+  changed_when: fasle
 - name: Copy index.html from template
   template:
     src: index.html.j2
     dest: /webcontent/index.html
+    mode: '0644'
   notify: restart httpd
 - name: Create link to new httpd root directory
   file:
