@@ -29,6 +29,7 @@
       file:
         state: directory
         path: /var/ftp/repo
+        mode: '0755'
     - name: mount ISO to mount point
       mount:
         path: /var/ftp/repo
